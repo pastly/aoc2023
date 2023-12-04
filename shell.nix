@@ -12,5 +12,6 @@ pkgs.mkShell {
     cabal-install
 
     tup
+    entr
   ];
 }

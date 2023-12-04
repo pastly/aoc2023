@@ -1,5 +1,7 @@
 .gitignore
+
 : foreach day*.hs |> ghc %f |> %B %B.o %B.hi
+
 : day01.input1.txt    | day01-1 |>  cat %f | ./day01-1 >%o |> day01.output1.txt
 : day01.input2.txt.gz | day01-1 |> zcat %f | ./day01-1 >%o |> day01.output2.txt
 : day01.input3.txt    | day01-2 |>  cat %f | ./day01-2 >%o |> day01.output3.txt
