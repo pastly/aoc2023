@@ -8,10 +8,8 @@ parseNumbers line = (\(_,_,r,m) -> (read . head $ m) : parseNumbers r) (line =~ 
 
 parseCard :: String -> ([Int], [Int])
 parseCard line =
-  (
-    parseNumbers ((\(_,_,_,m) -> head m) (line =~ ": ([0-9 ]+) \\|" :: (String,String,String,[String]))),
-    parseNumbers ((\(_,_,_,m) -> head m) (line =~ "\\| ([0-9 ]+)" :: (String,String,String,[String])))
-  )
+  (\(_,_,_,ms) -> (parseNumbers . head $ ms, parseNumbers . last $ ms))
+  (line =~ ": ([0-9 ]+) \\| ([0-9 ]+)" :: (String,String,String,[String]))
 
 bumpScores :: [(Int,Int)] -> Int
 bumpScores [] = 0
