@@ -1,0 +1,6 @@
+.gitignore
+
+: foreach *.hs |> ghc %f |> %B %B.o %B.hi
+
+: input1.txt    | prog1 |>  cat %f | ./prog1 > %o |> output1.txt
+: input2.txt.gz | prog1 |> zcat %f | ./prog1 > %o |> output2.txt
