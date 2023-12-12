@@ -1,0 +1,10 @@
+.gitignore
+: foreach *.hs |> ghc -XTemplateHaskell %f |> %B %B.o %B.hi %B.dyn_o %B.dyn_hi
+
+: input1.txt    | expand.py |> cat %f  | python3 expand.py        > %o |> input3.txt
+: input2.txt.gz | expand.py |> zcat %f | python3 expand.py | gzip > %o |> input4.txt.gz
+
+: input1.txt    | prog2 |>  cat %f | ./prog2 > %o |> output1.txt
+: input2.txt.gz | prog2 |> zcat %f | ./prog2 > %o |> output2.txt
+: input3.txt    | prog2 |>  cat %f | ./prog2 > %o |> output3.txt
+: input4.txt.gz | prog2 |> zcat %f | ./prog2 > %o |> output4.txt
