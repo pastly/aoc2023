@@ -65,29 +65,32 @@ rocksOnX x plot = ys
     ys = map (\(_,(_,y)) -> y) rocks
     rocks = filter (\(rt,(rx,ry)) -> rx == x) plot
 
-moveRockAt :: Plot -> Coord -> Plot
-moveRockAt plot coord = plot'
+moveRockAt :: Plot -> [[Int]] -> Coord -> (Plot, [[Int]])
+moveRockAt plot colYs coord = (plot', colYs')
   where
     idx = fromJust . findIndex (\(rt,c) -> c==coord) $ plot
     (before,_:after) = splitAt idx plot
     rest = before ++ after
     (x,y) = coord
-    rockYsAbove = filter (<y) $ rocksOnX x rest
+    rockYsAbove = filter (\y' -> y'<y) (colYs !! x)
     yAbove = maximum ((-1):rockYsAbove)
     rock' = (Round,(x,yAbove+1))
     plot' = rock' : rest
+    rockYsAbove' = yAbove+1 : filter (\a -> a/=y) rockYsAbove
+    colYs' = (take (x) colYs) ++ [yAbove+1 : filter (\y' -> y' /= y) (colYs!!x)] ++ drop (x+1) colYs
 
 
 roundRocks :: Plot -> [Coord]
--- roundRocks plot = map (\(_,c) -> c) . filter (\(rt,_) -> rt==Round) $ plot
 roundRocks plot = ans
   where
     ans = map snd . takeWhile (\(rt,_) -> rt==Round) $ plot'
     plot' = sort plot
 
-moveRocksAt :: Plot -> [Coord] -> Plot
-moveRocksAt plot [] = plot
-moveRocksAt plot (c:cs) = moveRocksAt (moveRockAt plot c) cs
+moveRocksAt :: Plot -> [[Int]] -> [Coord] -> Plot
+moveRocksAt plot _ [] = plot
+moveRocksAt plot colYs (c:cs) = moveRocksAt plot' colYs' cs
+  where
+    (plot', colYs') = moveRockAt plot colYs c
 
 -- calc width and height of plot
 wh :: Plot -> (Int,Int)
@@ -101,11 +104,12 @@ weight plot = sum . map (\(_,y) -> rockWeight y) . roundRocks $ plot
     (w,h) = wh plot
     rockWeight = abs . subtract h
 
-quarterCycle :: Plot -> Plot
-quarterCycle plot = plot'
+quarterCycle :: Int -> Plot -> Plot
+quarterCycle w plot = plot'
   where
-    plot'  = moveRocksAt plot rounds
-    rounds = sort . roundRocks $ plot
+    plot'  = moveRocksAt plot colYs rounds
+    colYs = map (\x -> rocksOnX x plot) [0..w-1]
+    rounds = roundRocks $ plot
 
 transposeRock' :: Rock -> Rock
 transposeRock' (rt,(x,y)) = (rt,(y,x))
@@ -134,10 +138,10 @@ mirrorY h plot = map (mirrorYRock h) plot
 cyclePlot :: (Int,Int) -> Plot -> Plot
 cyclePlot (w,h) plot = plot'
   where
-    plotAfterN = quarterCycle plot
-    plotAfterW = quarterCycle . transpose $ plotAfterN
-    plotAfterS = quarterCycle . mirrorY h . transpose $ plotAfterW
-    plotAfterE = quarterCycle . transpose . mirrorX w . mirrorY h $ plotAfterS
+    plotAfterN = quarterCycle w plot
+    plotAfterW = quarterCycle h . transpose $ plotAfterN
+    plotAfterS = quarterCycle w . mirrorY h . transpose $ plotAfterW
+    plotAfterE = quarterCycle h . transpose . mirrorX w . mirrorY h $ plotAfterS
     plot' = sort . mirrorX w . transpose $ plotAfterE
 
 main' contents = show ans ++ "\n"
