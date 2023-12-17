@@ -4,7 +4,7 @@ let
   ghc = pkgs.haskellPackages.ghcWithPackages (pkgs: [
     pkgs.regex-posix
     pkgs.memoize
-    #pkgs.parallel
+    pkgs.parallel
   ]);
 in
 pkgs.mkShell {

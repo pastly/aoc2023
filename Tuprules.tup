@@ -1,2 +1,2 @@
 .gitignore
-: foreach *.hs |> ghc %f |> %B %B.o %B.hi
+: foreach *.hs |> ghc -threaded -XTemplateHaskell %f |> %B %B.o %B.hi %B.dyn_hi %B.dyn_o
