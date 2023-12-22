@@ -1,0 +1,7 @@
+include_rules
+
+: input1.txt    | prog2 |>  cat %f | ./prog2 +RTS -N |tee %o |> output1.txt
+#: inputdebug.txt    | prog2 |>  cat %f | ./prog2 +RTS -N |tee %o |> outputdebug.txt
+#: input2.txt.gz | prog1 |> zcat %f | ./prog1 +RTS -N |tee %o |> output2.txt
+#: input1.txt    | prog2 |>  cat %f | ./prog2 +RTS -N |tee %o |> output3.txt
+#: input2.txt.gz | prog2 |> zcat %f | ./prog2 +RTS -N |tee %o |> output4.txt
